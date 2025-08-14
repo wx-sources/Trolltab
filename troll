@@ -16,7 +16,7 @@ local Troll = Window:MakeTab({
     Icon = "home"
 })
 
-local Paragraph = Tab1:AddParagraph({"🌅 Sunlight Hub xy - alternativa open-source ao Nytherune 🌅"})
+local Paragraph = Troll:AddParagraph({"🌅 Sunlight Hub xy - alternativa open-source ao Nytherune 🌅"})
 
 -- Variáveis globais
 local selectedPlayerName = nil
