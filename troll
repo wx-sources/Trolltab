@@ -1,3 +1,9 @@
+local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/Library-ui/refs/heads/main/Redzhubui"))()
+local Window = redzlib:MakeWindow({
+  Title = "🌅 Sunlight Hub xy 🌅",
+  SubTitle = "by Wx, granolakkj",
+  SaveFolder = "testando | redz lib v5.lua"
+})
 -- Serviços principais
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -6,8 +12,8 @@ local LocalPlayer = Players.LocalPlayer
 
 -- Aba Troll
 local Troll = Window:MakeTab({
-    Title = "Troll",
-    Icon = "rbxassetid://10723415903"
+    Title = "Home",
+    Icon = house
 })
 
 -- Variáveis globais
