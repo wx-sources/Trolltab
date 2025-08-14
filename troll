@@ -11,7 +11,19 @@ local Troll = Window:MakeTab({
 })
 
 -- Variáveis globais
-local selectedPlayerName = -- adicionar função pro Playername aq, por favor adicione
+local selectedPlayerName = nil
+local methodKill = nil
+
+-- Função para retornar o jogador selecionado
+local function GetSelectedPlayer()
+    if selectedPlayerName then
+        local player = Players:FindFirstChild(selectedPlayerName)
+        if player then
+            return player
+        end
+    end
+    return nil
+end
 
 -- Dropdown: Selecionar Jogador
 local killDropdown = Troll:AddDropdown({
@@ -33,6 +45,15 @@ local killDropdown = Troll:AddDropdown({
     end
 })
 
+-- Inicializa automaticamente com o primeiro player (se houver)
+local initialList = killDropdown.Options
+if #initialList > 0 then
+    selectedPlayerName = initialList[1]
+    getgenv().Target = selectedPlayerName
+    killDropdown:SetValue(selectedPlayerName)
+    print("Jogador inicial selecionado: " .. selectedPlayerName)
+end
+
 -- Botão: Atualizar lista de jogadores
 Troll:AddButton({
     Name = "Atualizar Player List",
@@ -45,11 +66,18 @@ Troll:AddButton({
         end
         killDropdown:Set(newList)
         print("Lista de jogadores atualizada: ", table.concat(newList, ", "))
+
         if selectedPlayerName and not Players:FindFirstChild(selectedPlayerName) then
             selectedPlayerName = nil
             getgenv().Target = nil
             killDropdown:SetValue("")
             print("Jogador selecionado saiu, seleção resetada.")
+        elseif not selectedPlayerName and #newList > 0 then
+            -- Define um novo jogador padrão caso anterior tenha saído
+            selectedPlayerName = newList[1]
+            getgenv().Target = selectedPlayerName
+            killDropdown:SetValue(selectedPlayerName)
+            print("Novo jogador selecionado automaticamente: " .. selectedPlayerName)
         end
     end
 })
@@ -58,7 +86,8 @@ Troll:AddButton({
 Troll:AddButton({
     Name = "Teleportar até o Player",
     Callback = function()
-        if not selectedPlayerName or not Players:FindFirstChild(selectedPlayerName) then
+        local target = GetSelectedPlayer()
+        if not target then
             print("Erro: Nenhum jogador selecionado ou jogador não encontrado.")
             return
         end
@@ -70,8 +99,7 @@ Troll:AddButton({
             return
         end
 
-        local target = Players:FindFirstChild(selectedPlayerName)
-        if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+        if target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
             root.CFrame = target.Character.HumanoidRootPart.CFrame
         else
             print("Erro: Jogador alvo inválido.")
@@ -88,7 +116,7 @@ Troll:AddToggle({
 
         local function UpdateCam()
             if enabled then
-                local target = Players:FindFirstChild(selectedPlayerName)
+                local target = GetSelectedPlayer()
                 if target and target.Character then
                     local hum = target.Character:FindFirstChild("Humanoid")
                     if hum then
@@ -192,28 +220,26 @@ Troll:AddButton({
         -- Função de rastrear e void kill
         local function TrackAndKill()
             while true do
-                if selectedPlayerName then
-                    local target = Players:FindFirstChild(selectedPlayerName)
-                    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-                        local targetRoot = target.Character.HumanoidRootPart
-                        local targetHum = target.Character:FindFirstChildOfClass("Humanoid")
-                        if targetHum and targetHum.Sit then
-                            if char and char:FindFirstChildOfClass("Humanoid") then
-                                bus:SetPrimaryPartCFrame(CFrame.new(9999, -450, 9999))
-                                print("Jogador sentou. Void kill ativado.")
-                                task.wait(0.2)
-                                char.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-                                task.wait(0.5)
-                                root.CFrame = originalPos
-                                print("Teleportado de volta.")
-                            end
-                            break
-                        else
-                            local t = tick() * 35
-                            local offsetX = math.sin(t) * 4
-                            local offsetZ = math.cos(t) * 20
-                            bus:SetPrimaryPartCFrame(targetRoot.CFrame * CFrame.new(offsetX, 0, offsetZ))
+                local target = GetSelectedPlayer()
+                if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+                    local targetRoot = target.Character.HumanoidRootPart
+                    local targetHum = target.Character:FindFirstChildOfClass("Humanoid")
+                    if targetHum and targetHum.Sit then
+                        if char and char:FindFirstChildOfClass("Humanoid") then
+                            bus:SetPrimaryPartCFrame(CFrame.new(9999, -450, 9999))
+                            print("Jogador sentou. Void kill ativado.")
+                            task.wait(0.2)
+                            char.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                            task.wait(0.5)
+                            root.CFrame = originalPos
+                            print("Teleportado de volta.")
                         end
+                        break
+                    else
+                        local t = tick() * 35
+                        local offsetX = math.sin(t) * 4
+                        local offsetZ = math.cos(t) * 20
+                        bus:SetPrimaryPartCFrame(targetRoot.CFrame * CFrame.new(offsetX, 0, offsetZ))
                     end
                 end
                 RunService.RenderStepped:Wait()
