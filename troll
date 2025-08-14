@@ -13,7 +13,7 @@ local LocalPlayer = Players.LocalPlayer
 -- Aba Troll
 local Troll = Window:MakeTab({
     Title = "Home",
-    Icon = house
+    Icon = "home"
 })
 
 -- Variáveis globais
