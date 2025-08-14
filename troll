@@ -11,8 +11,7 @@ local Troll = Window:MakeTab({
 })
 
 -- Variáveis globais
-local selectedPlayerName
-local methodKill
+local selectedPlayerName = -- adicionar função pro Playername aq, por favor adicione
 
 -- Dropdown: Selecionar Jogador
 local killDropdown = Troll:AddDropdown({
