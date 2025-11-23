@@ -4,6 +4,8 @@ local Window = redzlib:MakeWindow({
   SubTitle = "by Wx, granolakkj",
   SaveFolder = "Sunlight opensrc"
 })
+
+local Troll = Window:MakeTab({"troll players"})
      -- Seleção de jogador
 local selectedPlayerName = nil
 local methodKill = "Bus"
